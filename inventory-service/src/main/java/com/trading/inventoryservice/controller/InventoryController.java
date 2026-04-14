@@ -2,6 +2,8 @@ package com.trading.inventoryservice.controller;
 
 import com.trading.inventoryservice.dto.ProductRequestDto;
 import com.trading.inventoryservice.dto.ProductResponseDto;
+import com.trading.inventoryservice.dto.PurchaseProductRequestDto;
+import com.trading.inventoryservice.dto.PurchaseProductResponseDto;
 import com.trading.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,6 +27,7 @@ public class InventoryController {
         return inventoryService.getProduct(productId);
     }
 
+    @GetMapping(path="/getProduct")
     public ResponseEntity<Page<ProductResponseDto>> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -32,4 +35,9 @@ public class InventoryController {
         return inventoryService.getAllProducts(page,size);
     }
 
+    @PostMapping("/purchase")
+    public ResponseEntity<PurchaseProductResponseDto> purchaseProduct(
+            @RequestBody PurchaseProductRequestDto requestDto) throws Exception {
+        return inventoryService.purchaseProduct(requestDto);
+    }
 }
