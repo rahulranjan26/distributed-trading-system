@@ -1,15 +1,18 @@
 package com.trading.inventoryservice.controller;
 
-import com.trading.inventoryservice.dto.ProductRequestDto;
-import com.trading.inventoryservice.dto.ProductResponseDto;
-import com.trading.inventoryservice.dto.PurchaseProductRequestDto;
-import com.trading.inventoryservice.dto.PurchaseProductResponseDto;
+import com.trading.inventoryservice.dto.external.InventoryRequest;
+import com.trading.inventoryservice.dto.external.InventoryResponse;
+import com.trading.inventoryservice.dto.internal.ProductRequestDto;
+import com.trading.inventoryservice.dto.internal.ProductResponseDto;
+import com.trading.inventoryservice.dto.internal.PurchaseProductRequestDto;
+import com.trading.inventoryservice.dto.internal.PurchaseProductResponseDto;
 import com.trading.inventoryservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -40,4 +43,11 @@ public class InventoryController {
             @RequestBody PurchaseProductRequestDto requestDto) throws Exception {
         return inventoryService.purchaseProduct(requestDto);
     }
+
+    @PostMapping(path="/check")
+    List<InventoryResponse> checkProduct(@RequestBody List<InventoryRequest> request){
+        return inventoryService.checkProduct(request);
+    }
+
+
 }

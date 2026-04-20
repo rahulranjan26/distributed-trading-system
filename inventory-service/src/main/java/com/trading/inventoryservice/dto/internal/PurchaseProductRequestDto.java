@@ -1,4 +1,4 @@
-package com.trading.inventoryservice.dto;
+package com.trading.inventoryservice.dto.internal;
 
 
 import lombok.AllArgsConstructor;

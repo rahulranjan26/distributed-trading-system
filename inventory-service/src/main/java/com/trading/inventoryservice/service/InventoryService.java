@@ -1,9 +1,11 @@
 package com.trading.inventoryservice.service;
 
-import com.trading.inventoryservice.dto.ProductRequestDto;
-import com.trading.inventoryservice.dto.ProductResponseDto;
-import com.trading.inventoryservice.dto.PurchaseProductRequestDto;
-import com.trading.inventoryservice.dto.PurchaseProductResponseDto;
+import com.trading.inventoryservice.dto.external.InventoryRequest;
+import com.trading.inventoryservice.dto.external.InventoryResponse;
+import com.trading.inventoryservice.dto.internal.ProductRequestDto;
+import com.trading.inventoryservice.dto.internal.ProductResponseDto;
+import com.trading.inventoryservice.dto.internal.PurchaseProductRequestDto;
+import com.trading.inventoryservice.dto.internal.PurchaseProductResponseDto;
 import com.trading.inventoryservice.entity.Product;
 import com.trading.inventoryservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -166,7 +171,43 @@ public class InventoryService {
         } finally {
             lock.unlock();
         }
+    }
+
+    public List<InventoryResponse> checkProduct(List<InventoryRequest> request) {
+        log.info("Checking Product Availability");
+
+        List<InventoryResponse> response = new ArrayList<>();
+        for (var res : request) {
+            RLock lock = redissonClient.getLock("inventory:" + res.getProductId());
+            lock.lock();
+            try {
+                Optional<Product> dbProduct = productRepository.findById(res.getProductId());
+                if (dbProduct.isEmpty()) {
+                    log.info("The product with Id: {} Not present in inventory", res.getProductId());
+                    continue;
+                }
+                Product product = dbProduct.get();
+                if (product.getQuantity() < res.getQuantity()) {
+                    log.info("Not enough quantity of Product is present for product with Id : {}", res.getProductId());
+                    continue;
+                }
+
+                InventoryResponse newInventoryResponse = InventoryResponse.builder()
+                        .available(true)
+                        .price(BigDecimal.valueOf(product.getPrice()))
+                        .productId(product.getProductId())
+                        .build();
+
+                response.add(newInventoryResponse);
+                product.setQuantity(product.getQuantity() - res.getQuantity());
+                productRepository.save(product);
+
+            } finally {
+                lock.unlock();
+            }
 
 
+        }
+        return response;
     }
 }
