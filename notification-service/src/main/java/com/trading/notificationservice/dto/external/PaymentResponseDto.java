@@ -1,4 +1,4 @@
-package com.trading.orderservice.dto.external;
+package com.trading.notificationservice.dto.external;
 
 
 import lombok.*;

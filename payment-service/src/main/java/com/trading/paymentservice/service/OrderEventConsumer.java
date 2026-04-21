@@ -39,6 +39,8 @@ public class OrderEventConsumer {
                 .paymentId(payment.getPaymentId())
                 .successful(true)
                 .orderId(payment.getOrderId())
+                .totalAmount(payment.getAmount())
+                .userId(payment.getUserId())
                 .build();
         paymentEventProducer.sendPaymentSuccessfulEvent(paymentResponseDto);
         log.info("Payment saved for orderId:{}", orderResponseDto.getOrderId());
