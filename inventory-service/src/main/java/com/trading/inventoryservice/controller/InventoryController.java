@@ -26,7 +26,7 @@ public class InventoryController {
         return inventoryService.addProduct(productRequestDto);
     }
     @GetMapping(path = "/getProduct/{productId}")
-    public ResponseEntity<ProductResponseDto> getProduct(@PathVariable Long productId) throws Exception {
+    public ResponseEntity<ProductResponseDto> getProduct(@PathVariable Long productId) {
         return inventoryService.getProduct(productId);
     }
 
@@ -40,7 +40,7 @@ public class InventoryController {
 
     @PostMapping("/purchase")
     public ResponseEntity<PurchaseProductResponseDto> purchaseProduct(
-            @RequestBody PurchaseProductRequestDto requestDto) throws Exception {
+            @RequestBody PurchaseProductRequestDto requestDto) {
         return inventoryService.purchaseProduct(requestDto);
     }
 

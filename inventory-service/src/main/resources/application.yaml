@@ -15,6 +15,39 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      properties:
+        spring.instrumentation.tracing.enabled: true
+    consumer:
+      group-id: inventory-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.trading.inventoryservice.dto.external.OrderCancelledResponseDto
+        spring.instrumentation.tracing.enabled: true
+
+
+
+
+
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
+
 server:
   port: 8082
 

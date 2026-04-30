@@ -7,7 +7,10 @@ import com.trading.inventoryservice.dto.internal.ProductResponseDto;
 import com.trading.inventoryservice.dto.internal.PurchaseProductRequestDto;
 import com.trading.inventoryservice.dto.internal.PurchaseProductResponseDto;
 import com.trading.inventoryservice.entity.Product;
+import com.trading.inventoryservice.exceptions.CoinNotFoundException;
+import com.trading.inventoryservice.exceptions.InsufficientStockException;
 import com.trading.inventoryservice.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
@@ -34,6 +37,7 @@ public class InventoryService {
     private final ReentrantLock reentrantLock = new ReentrantLock();
     private final RedissonClient redissonClient;
 
+    @Transactional
     public ResponseEntity<ProductResponseDto> addProduct(ProductRequestDto productRequestDto) {
         log.info("Adding new Product with productName: {}", productRequestDto.getProductName());
         Product newProduct = Product.builder()
@@ -57,12 +61,13 @@ public class InventoryService {
         return ResponseEntity.ok(finalProduct);
     }
 
-    public ResponseEntity<ProductResponseDto> getProduct(Long productId) throws Exception {
+    @Transactional
+    public ResponseEntity<ProductResponseDto> getProduct(Long productId) {
         log.info("Getting product with Product Id:{}", productId);
         Optional<Product> savedProduct = productRepository.findById(productId);
 
         if (savedProduct.isEmpty())
-            throw new Exception("product not found with product id:{}");
+            throw new CoinNotFoundException(String.valueOf(productId));
         Product product = savedProduct.get();
         ProductResponseDto responseDto = ProductResponseDto.builder()
                 .productName(product.getProductName())
@@ -77,7 +82,7 @@ public class InventoryService {
         return ResponseEntity.ok(responseDto);
 
     }
-
+    @Transactional
     public ResponseEntity<Page<ProductResponseDto>> getAllProducts(int page, int size) {
         log.info("Getting all the products of inventory");
         Pageable pageable = PageRequest.of(page, size);
@@ -107,8 +112,8 @@ public class InventoryService {
      * Phase 2 : We use Redisson Lock which is multi instance lock and has a shared lock which is shared among different instances
      *
      */
-
-    public ResponseEntity<PurchaseProductResponseDto> purchaseProduct(PurchaseProductRequestDto purchaseProductRequestDto) throws Exception {
+    @Transactional
+    public ResponseEntity<PurchaseProductResponseDto> purchaseProduct(PurchaseProductRequestDto purchaseProductRequestDto) {
         log.info("We are purchase the product with product id:{}", purchaseProductRequestDto.getProductId());
 
         /// Phase 1
@@ -148,11 +153,11 @@ public class InventoryService {
 
             Optional<Product> product = productRepository.findById(purchaseProductRequestDto.getProductId());
             if (product.isEmpty())
-                throw new Exception("Product is not present");
+                throw new CoinNotFoundException(String.valueOf(purchaseProductRequestDto.getProductId()));
 
             Product existentProduct = product.get();
             if (existentProduct.getQuantity() == 0 || existentProduct.getQuantity() < purchaseProductRequestDto.getQuantity())
-                throw new Exception("Insufficient product in the inventory");
+                throw new InsufficientStockException(String.valueOf(purchaseProductRequestDto.getProductId()));
 
 
             double totalCost = purchaseProductRequestDto.getQuantity() * existentProduct.getPrice();
@@ -173,6 +178,7 @@ public class InventoryService {
         }
     }
 
+    @Transactional
     public List<InventoryResponse> checkProduct(List<InventoryRequest> request) {
         log.info("Checking Product Availability");
 
