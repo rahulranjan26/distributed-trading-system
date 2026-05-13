@@ -5,9 +5,12 @@ import com.trading.userservice.dto.AuthResponse;
 import com.trading.userservice.dto.LoginUserRequest;
 import com.trading.userservice.dto.RegisterUserRequest;
 import com.trading.userservice.entity.User;
-import com.trading.userservice.enums.Role;
+import com.trading.userservice.exceptions.DuplicateEmailException;
+import com.trading.userservice.exceptions.InvalidCredentialsException;
+import com.trading.userservice.exceptions.UserNotFoundException;
 import com.trading.userservice.repository.UserRepository;
 import com.trading.userservice.security.JWTUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +30,11 @@ public class AuthService {
     private final JWTUtils jWTUtils;
     private final RedisTemplate<String, String> redisTemplate;
 
-    public ResponseEntity<AuthResponse> register(RegisterUserRequest userRequest) throws Exception {
+    @Transactional
+    public ResponseEntity<AuthResponse> register(RegisterUserRequest userRequest) {
         Optional<User> user = userRepository.findUserByEmail(userRequest.getEmail());
         if (user.isPresent())
-            throw new Exception("User Already Present");
+            throw new DuplicateEmailException(userRequest.getEmail());
         User newUser = User.builder()
                 .email(userRequest.getEmail())
                 .name(userRequest.getName())
@@ -56,12 +60,12 @@ public class AuthService {
                 .build());
     }
 
-    public ResponseEntity<AuthResponse> login(LoginUserRequest loginRequest) throws Exception {
+    public ResponseEntity<AuthResponse> login(LoginUserRequest loginRequest) {
         User user = userRepository.findUserByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new Exception("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(loginRequest.getEmail()));
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
-            throw new Exception("Invalid credentials");
+            throw new InvalidCredentialsException();
 
         String accessToken = jWTUtils.generateToken(user);
         String refreshToken = UUID.randomUUID().toString();
@@ -80,7 +84,4 @@ public class AuthService {
                 .role(user.getRole().toString())
                 .build());
     }
-
-
-
 }

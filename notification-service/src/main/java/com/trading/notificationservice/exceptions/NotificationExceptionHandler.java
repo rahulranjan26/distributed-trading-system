@@ -1,4 +1,4 @@
-package com.trading.userservice.exceptions;
+package com.trading.notificationservice.exceptions;
 
 
 import com.trading.dto.ApiError;
@@ -12,20 +12,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
 @RestControllerAdvice
-public class UserExceptionHandler extends GlobalExceptionHandler {
+public class NotificationExceptionHandler extends GlobalExceptionHandler {
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ApiResponse<?>> handleUserNotFoundException(UserNotFoundException ex) {
-        ApiError error = new ApiError(ex.getMessage(), HttpStatus.NOT_FOUND);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotificationFailedException.class)
+    public ResponseEntity<ApiResponse<?>> handleNotificationFailedException(NotificationFailedException ex) {
+        ApiError error = new ApiError(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(new ApiResponse<>(error));
     }
 
-    @ExceptionHandler(DuplicateEmailException.class)
-    public ResponseEntity<ApiResponse<?>> handleDuplicateEmailException(DuplicateEmailException ex) {
-        ApiError error = new ApiError(ex.getMessage(), HttpStatus.CONFLICT);
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ApiResponse<>(error));
-    }
 
 }

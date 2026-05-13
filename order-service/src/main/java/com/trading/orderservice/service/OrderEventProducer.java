@@ -1,5 +1,6 @@
 package com.trading.orderservice.service;
 
+import com.trading.orderservice.dto.external.OrderCancelledResponseDto;
 import com.trading.orderservice.dto.internal.OrderResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,4 +19,9 @@ public class OrderEventProducer {
         kafkaTemplate.send("order.created", orderResponseDto.getOrderId().toString(), orderResponseDto);
     }
 
+
+    public void orderCancelledEvent(OrderCancelledResponseDto orderCancelledResponseDto){
+        log.info("Order got cancelled so need to restore the stocks:{}",orderCancelledResponseDto.getOrderId());
+        kafkaTemplate.send("order.cancelled",orderCancelledResponseDto.getOrderId().toString(),orderCancelledResponseDto);
+    }
 }

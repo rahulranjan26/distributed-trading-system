@@ -1,7 +1,11 @@
 package com.trading.userservice.exceptions;
 
-public class PaymentFailedException extends RuntimeException {
-    public PaymentFailedException(Long orderId) {
-        super("Payment failed for order: " + orderId);
+public class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException(Long userId) {
+        super("User not found with id: " + userId);
+    }
+
+    public UserNotFoundException(String email) {
+        super("User not found with email: " + email);
     }
 }

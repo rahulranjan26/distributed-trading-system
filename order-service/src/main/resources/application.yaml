@@ -19,6 +19,8 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.instrumentation.tracing.enabled: true
     consumer:
       group-id: order-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -27,6 +29,8 @@ spring:
         spring.json.trusted.packages: "*"
         spring.json.use.type.headers: false
         spring.json.value.default.type: com.trading.orderservice.dto.external.PaymentResponseDto
+        spring.instrumentation.tracing.enabled: true
+
 #      properties:
 #        spring.json.add.type.headers: false
 
@@ -41,3 +45,15 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
 
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans

@@ -1,4 +1,4 @@
-package com.trading.orderservice.exceptions;
+package com.trading.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {

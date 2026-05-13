@@ -1,12 +1,9 @@
-package com.trading.orderservice.exceptions;
+package com.trading.paymentservice.exceptions;
 
 
 import com.trading.dto.ApiError;
 import com.trading.dto.ApiResponse;
 import com.trading.exception.GlobalExceptionHandler;
-import feign.FeignException;
-import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,26 +11,19 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
 @RestControllerAdvice
-@Slf4j
-public class OrderExceptionHandler extends GlobalExceptionHandler {
-    @ExceptionHandler(OrderNotFoundException.class)
-    public ResponseEntity<ApiResponse<?>> handleOrderNotFoundException(OrderNotFoundException ex) {
-        ApiError error = new ApiError(ex.getMessage(), HttpStatus.NOT_FOUND);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+public class PaymentExceptionHandler extends GlobalExceptionHandler {
+
+    @ExceptionHandler(PaymentFailedException.class)
+    public ResponseEntity<ApiResponse<?>> handlePaymentFailedException(PaymentFailedException ex) {
+        ApiError error = new ApiError(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(new ApiResponse<>(error));
     }
 
-    @ExceptionHandler(OrderAlreadyCancelledException.class)
-    public ResponseEntity<ApiResponse<?>> handleOrderAlreadyCancelledException(OrderAlreadyCancelledException ex) {
+    @ExceptionHandler(DuplicatePaymentException.class)
+    public ResponseEntity<ApiResponse<?>> handleDuplicatePaymentException(DuplicatePaymentException ex) {
         ApiError error = new ApiError(ex.getMessage(), HttpStatus.CONFLICT);
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ApiResponse<>(error));
-    }
-
-    @ExceptionHandler(FeignException.class)
-    public ResponseEntity<ApiResponse<?>> handleFeignException(FeignException ex) {
-        ApiError error = new ApiError(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(new ApiResponse<>(error));
     }
 

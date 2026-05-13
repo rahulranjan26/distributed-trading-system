@@ -4,25 +4,23 @@ spring:
 
   cloud:
     gateway:
-      server:
-        webflux:
-          routes:
-            - id: user-service
-              uri: lb://user-service
-              predicates:
-                - Path=/auth/**
-            - id: inventory-service
-              uri: lb://inventory-service
-              predicates:
-                - Path=/inventory/**
-            - id: order-service
-              uri: lb://order-service
-              predicates:
-                - Path=/orders/**
-            - id: payment-service
-              uri: lb://payment-service
-              predicates:
-                - Path=/payment/**
+      routes:
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/auth/**
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path=/inventory/**
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/orders/**
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/payment/**
 
 
 
@@ -45,3 +43,15 @@ logging:
   level:
     org.springframework.cloud.gateway: DEBUG
     reactor.netty: DEBUG
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans

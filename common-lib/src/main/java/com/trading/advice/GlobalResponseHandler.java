@@ -1,6 +1,7 @@
-package com.trading.orderservice.exceptions;
+package com.trading.advice;
 
 
+import com.trading.dto.ApiResponse;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;

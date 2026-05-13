@@ -1,7 +1,7 @@
 package com.trading.userservice.exceptions;
 
-public class DuplicatePaymentException extends RuntimeException {
-    public DuplicatePaymentException(Long orderId) {
-        super("Payment already processed for order: " + orderId);
+public class DuplicateEmailException extends RuntimeException {
+    public DuplicateEmailException(String email) {
+        super("Email already registered: " + email);
     }
 }

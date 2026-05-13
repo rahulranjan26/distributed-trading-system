@@ -1,4 +1,4 @@
-package com.trading.orderservice.exceptions;
+package com.trading.dto;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;

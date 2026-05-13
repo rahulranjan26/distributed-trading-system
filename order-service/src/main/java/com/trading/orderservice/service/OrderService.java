@@ -11,6 +11,7 @@ import com.trading.orderservice.entity.OrderItem;
 import com.trading.orderservice.entity.OrderStatus;
 import com.trading.orderservice.repository.OrderItemRepository;
 import com.trading.orderservice.repository.OrderRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +34,10 @@ public class OrderService {
     private final InventoryClient inventoryClient;
     private final OrderEventProducer orderEventProducer;
 
-
+    @Transactional
     public ResponseEntity<OrderResponseDto> orderItems(OrderRequest request) {
         log.info("creating orders in OrderService");
-
+        log.info("X-User-Id: {}", request.getUserId());
         List<InventoryRequest> inventoryRequest = new ArrayList<>();
 
         for (var res : request.getItems()) {

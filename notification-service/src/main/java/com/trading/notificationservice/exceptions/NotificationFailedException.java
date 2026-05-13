@@ -1,7 +1,7 @@
 package com.trading.notificationservice.exceptions;
 
-public class DuplicateEmailException extends RuntimeException {
-    public DuplicateEmailException(String email) {
-        super("Email already registered: " + email);
+public class NotificationFailedException extends RuntimeException {
+    public NotificationFailedException(Long userId) {
+        super("Failed to send notification to user: " + userId);
     }
 }

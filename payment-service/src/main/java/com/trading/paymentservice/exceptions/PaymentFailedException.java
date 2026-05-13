@@ -1,7 +1,7 @@
 package com.trading.paymentservice.exceptions;
 
-public class OrderNotFoundException extends RuntimeException {
-    public OrderNotFoundException(Long orderId) {
-        super("Order not found with id: " + orderId);
+public class PaymentFailedException extends RuntimeException {
+    public PaymentFailedException(Long orderId) {
+        super("Payment failed for order: " + orderId);
     }
 }

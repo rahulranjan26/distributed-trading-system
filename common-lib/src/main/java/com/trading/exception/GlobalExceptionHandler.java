@@ -1,20 +1,17 @@
-package com.trading.orderservice.exceptions;
+package com.trading.exception;
 
 
-import feign.FeignException;
+import com.trading.dto.ApiError;
+import com.trading.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.stream.Collectors;
-
-import io.jsonwebtoken.JwtException;
 
 
 @ControllerAdvice
@@ -46,11 +43,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ApiResponse<>(generateApiErrorObject(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY)), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<?>> handleAccessDenied(AccessDeniedException ex) {
-        log.error("Access denied: {}", ex.getMessage());
-        return new ResponseEntity<>(new ApiResponse<>(generateApiErrorObject(ex.getMessage(), HttpStatus.FORBIDDEN)), HttpStatus.FORBIDDEN);
-    }
+
 
     @ExceptionHandler(ServiceUnavailableException.class)
     public ResponseEntity<ApiResponse<?>> handleServiceUnavailable(ServiceUnavailableException ex) {
@@ -68,11 +61,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ApiResponse<>(generateApiErrorObject(message, HttpStatus.BAD_REQUEST)), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(FeignException.class)
-    public ResponseEntity<ApiResponse<?>> handleFeign(FeignException ex) {
-        log.error("Feign client error: {}", ex.getMessage());
-        return new ResponseEntity<>(new ApiResponse<>(generateApiErrorObject("Downstream service error", HttpStatus.BAD_GATEWAY)), HttpStatus.BAD_GATEWAY);
-    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleException(Exception ex) {
@@ -80,9 +68,4 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ApiResponse<>(generateApiErrorObject(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR)), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(JwtException.class)
-    public ResponseEntity<ApiResponse<?>> handleJwt(JwtException ex) {
-        log.error("JWT error: {}", ex.getMessage());
-        return new ResponseEntity<>(new ApiResponse<>(generateApiErrorObject(ex.getMessage(), HttpStatus.UNAUTHORIZED)), HttpStatus.UNAUTHORIZED);
-    }
 }

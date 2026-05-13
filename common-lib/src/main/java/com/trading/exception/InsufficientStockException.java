@@ -1,4 +1,4 @@
-package com.trading.orderservice.exceptions;
+package com.trading.exception;
 
 public class InsufficientStockException extends RuntimeException {
     public InsufficientStockException(String message) {

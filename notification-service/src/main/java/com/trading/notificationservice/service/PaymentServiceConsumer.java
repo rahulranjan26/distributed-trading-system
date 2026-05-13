@@ -4,6 +4,7 @@ package com.trading.notificationservice.service;
 import com.trading.notificationservice.dto.external.PaymentResponseDto;
 import com.trading.notificationservice.entity.Notification;
 import com.trading.notificationservice.repository.NotificationRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -17,6 +18,7 @@ public class PaymentServiceConsumer {
     private final NotificationRepository notificationRepository;
 
     @KafkaListener(topics = "payment.done", groupId = "notification-group")
+    @Transactional
     public void consumeSuccessfulPayment(PaymentResponseDto paymentResponseDto) {
         log.info("We are consuming the  payment with paymentId : {}", paymentResponseDto.getPaymentId());
         Notification notification = Notification.builder()

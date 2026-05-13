@@ -22,14 +22,14 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> registerUser(@RequestBody RegisterUserRequest request) throws Exception {
+    public ResponseEntity<AuthResponse> registerUser(@RequestBody RegisterUserRequest request) {
         log.info("Registering the user with email id: {}", request.getEmail());
         return authService.register(request);
     }
 
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> loginUser(@RequestBody  LoginUserRequest loginUserRequest) throws Exception {
+    public ResponseEntity<AuthResponse> loginUser(@RequestBody  LoginUserRequest loginUserRequest) {
         log.info("Loggin the user with email: {}", loginUserRequest.getEmail());
         return authService.login(loginUserRequest);
     }
